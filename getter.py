@@ -136,7 +136,7 @@ def dynamic_web_crawler_SPR(url, info):
 
 # google API 접속 
 scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
-json_keyfile_name = 'test-project-424802-962f013a50f0.json'
+json_keyfile_name = os.getenv('json_keyfil_name')
 credentials = ServiceAccountCredentials.from_json_keyfile_name(json_keyfile_name, scope)
 gc = gspread.authorize(credentials)
 sheet_url = os.getenv('json_key')
