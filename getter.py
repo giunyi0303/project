@@ -12,7 +12,7 @@ from datetime import datetime
 from selenium.common.exceptions import TimeoutException, NoSuchElementException, ElementClickInterceptedException
 from dotenv import load_dotenv
 import os
-
+from gspread_formatting import *
 
 load_dotenv()
 project_info = {
@@ -49,7 +49,7 @@ def dynamic_web_crawler(url, info):
         
 def dynamic_web_crawler_SPR(url, info):
     options = Options()
-    # options.add_argument('--headless') 
+    options.add_argument('--headless') 
 
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
@@ -124,6 +124,11 @@ sheet_url = os.getenv('json_key')
 doc = gc.open_by_url(sheet_url)
 url = os.getenv('url')
 
+def format_percentage(worksheet, cell):
+    format_cell_range(worksheet, cell, CellFormat(
+        numberFormat=NumberFormat(type='PERCENT', pattern='0.00%')
+    ))
+
 for project, info in project_info.items():
     print(f"Logging in for project: {project}")
     if project == 'SPR_project':
@@ -134,8 +139,20 @@ for project, info in project_info.items():
                     print(f"Agency: {agency}, Value: {value}")
                     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                     worksheet = doc.worksheet(project)
-                    row_data = [project, current_time, agency, value]
+                    
+                    # 퍼센트 형식으로 변환
+                    try:
+                        percentage_value = float(value.strip('%')) / 100
+                    except ValueError:
+                        percentage_value = value  # 변환에 실패하면 원래 값을 유지
+                    
+                    row_data = [project, current_time, agency, percentage_value]
                     worksheet.append_row(row_data)
+                    
+                    # 형식 지정
+                    last_row = len(worksheet.get_all_values())
+                    cell = f'D{last_row}'
+                    format_percentage(worksheet, cell)
         except Exception as e:
             print(f"An error occurred: {str(e)}")
             print("Retrying...")
@@ -145,8 +162,18 @@ for project, info in project_info.items():
                     print(f"Agency: {agency}, Value: {value}")
                     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                     worksheet = doc.worksheet(project)
-                    row_data = [project, current_time, agency, value]
+                    
+                    try:
+                        percentage_value = float(value.strip('%')) / 100
+                    except ValueError:
+                        percentage_value = value
+                    
+                    row_data = [project, current_time, agency, percentage_value]
                     worksheet.append_row(row_data)
+                    
+                    last_row = len(worksheet.get_all_values())
+                    cell = f'D{last_row}'
+                    format_percentage(worksheet, cell)
             else:
                 print("No results obtained.")
     else:  
@@ -155,8 +182,18 @@ for project, info in project_info.items():
             print(f"Value extracted: {value}")
             current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             worksheet = doc.worksheet(project)
-            row_data = [project, current_time, value]
+            
+            try:
+                percentage_value = float(value.strip('%')) / 100
+            except ValueError:
+                percentage_value = value
+            
+            row_data = [project, current_time, percentage_value]
             worksheet.append_row(row_data)
+            
+            last_row = len(worksheet.get_all_values())
+            cell = f'C{last_row}'
+            format_percentage(worksheet, cell)
         except Exception as e:
             print(f"An error occurred: {str(e)}")
             print("Retrying...")
@@ -164,5 +201,15 @@ for project, info in project_info.items():
             print(f"Value extracted: {value}")
             current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             worksheet = doc.worksheet(project)
-            row_data = [project, current_time, value]
+            
+            try:
+                percentage_value = float(value.strip('%')) / 100
+            except ValueError:
+                percentage_value = value
+            
+            row_data = [project, current_time, percentage_value]
             worksheet.append_row(row_data)
+            
+            last_row = len(worksheet.get_all_values())
+            cell = f'C{last_row}'
+            format_percentage(worksheet, cell)
