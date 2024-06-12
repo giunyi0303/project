@@ -60,7 +60,7 @@ def dynamic_web_crawler_SPR(url, info):
         password_field = wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="password"]')))
         
         username_field.send_keys(info['username'])
-        password_field.send_keys(info['password']))
+        password_field.send_keys(info['password'])
 
         login_button = wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="__next"]/div[1]/div/div[3]/div[1]/form/button')))
         login_button.click()
