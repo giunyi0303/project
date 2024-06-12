@@ -60,7 +60,7 @@ def dynamic_web_crawler_SPR(url, info):
         password_field = wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="password"]')))
         
         username_field.send_keys(info['username'])
-        password_field.send_keys(info['password'])
+        password_field.send_keys(info['password']))
 
         login_button = wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="__next"]/div[1]/div/div[3]/div[1]/form/button')))
         login_button.click()
@@ -131,9 +131,6 @@ for project, info in project_info.items():
             results = dynamic_web_crawler_SPR(url , info)
             if results is not None:
                 for agency, value in results:
-                    # 값이 '할당없음'이 아니고 퍼센트 형식인 경우에만 변환
-                    if value != '할당없음' and value.endswith('%'):
-                        value = f"{float(value.strip('%')):.1f}%"
                     print(f"Agency: {agency}, Value: {value}")
                     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                     worksheet = doc.worksheet(project)
@@ -145,8 +142,6 @@ for project, info in project_info.items():
             results = dynamic_web_crawler_SPR(url , info)
             if results is not None:
                 for agency, value in results:
-                    if value != '할당없음' and value.endswith('%'):
-                        value = f"{float(value.strip('%')):.1f}%"
                     print(f"Agency: {agency}, Value: {value}")
                     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                     worksheet = doc.worksheet(project)
@@ -157,9 +152,6 @@ for project, info in project_info.items():
     else:  
         try:
             value = dynamic_web_crawler(url, info)
-            # 값이 '할당없음'이 아니고 퍼센트 형식인 경우에만 변환
-            if value != '할당없음' and value.endswith('%'):
-                value = f"{float(value.strip('%')):.1f}%"
             print(f"Value extracted: {value}")
             current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             worksheet = doc.worksheet(project)
@@ -169,8 +161,6 @@ for project, info in project_info.items():
             print(f"An error occurred: {str(e)}")
             print("Retrying...")
             value = dynamic_web_crawler(url, info)
-            if value != '할당없음' and value.endswith('%'):
-                value = f"{float(value.strip('%')):.1f}%"
             print(f"Value extracted: {value}")
             current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             worksheet = doc.worksheet(project)
